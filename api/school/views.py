@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, permissions
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from utils.day_util import get_day_name
@@ -27,11 +27,23 @@ from .serializers import (
     EventSerializer,
 )
 from .models import LESSONS_PER_DAY
+from users.permissions import HasGroupPermission
 
 
 class ProfessorViewSet(viewsets.ModelViewSet):
     queryset = Professor.objects.all().order_by("full_name")
     serializer_class = ProfessorSerializer
+    permission_classes = [permissions.IsAuthenticated, HasGroupPermission]
+
+    # Define as permissões necessárias para acessar este ViewSet.
+    # O formato é 'app_label.action_model'
+    required_permissions = [
+        "school.view_professor",  # Para list e retrieve (GET)
+        "school.add_professor",   # Para create (POST)
+        "school.change_professor",# Para update (PUT/PATCH)
+        "school.delete_professor",# Para destroy (DELETE)
+    ]
+
     filter_backends = [filters.SearchFilter]
     search_fields = [
         "full_name",
