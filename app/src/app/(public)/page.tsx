@@ -2,13 +2,13 @@
 
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { AgendaItem } from "@/types/agenda";
-import { Event } from "@/types/event";
+import { AgendaItemProps } from "@/types/agenda";
+import { EventProps } from "@/types/event";
 import { AGENDA_PENDENTS_URL, EVENT_PENDENTS_URL } from "@/config";
 
 export default function Home() {
-	const [agenda, setAgenda] = useState<AgendaItem[]>([]);
-	const [events, setEvents] = useState<Event[]>([]);
+	const [agenda, setAgenda] = useState<AgendaItemProps[]>([]);
+	const [events, setEvents] = useState<EventProps[]>([]);
 
 	useEffect(() => {
 		async function getAgenda() {

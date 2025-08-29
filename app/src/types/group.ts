@@ -15,7 +15,7 @@ export type GroupPostProps = Omit<
 	"id" | "itinerary_details" | "created_at"
 >;
 
-export type DailyLessonsView = {
+export type DailyLessonsViewProps = {
 	day: number;
 	lessons: LessonProps[];
 };

@@ -1,4 +1,4 @@
-export interface Event {
+export interface EventProps {
 	id: number;
 	title: string;
 	description?: string;
@@ -10,3 +10,8 @@ export interface Event {
 	created_at: string;
 	updated_at: string;
 }
+
+export type EventPostProps = Omit<
+	EventProps,
+	"id" | "created_at" | "updated_at"
+>;

@@ -25,6 +25,12 @@ export default function Header() {
 				<li>
 					<Link href="/lessons">Horários</Link>
 				</li>
+				<li>
+					<Link href="/events">Eventos</Link>
+				</li>
+				<li>
+					<Link href="/agenda">Agenda</Link>
+				</li>
 			</ul>
 		</div>
 	);

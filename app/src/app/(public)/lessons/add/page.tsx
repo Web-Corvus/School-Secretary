@@ -13,17 +13,20 @@ import {
 import { GroupProps } from "@/types/group";
 import { SubjectProps } from "@/types/subject";
 import { ProfessorProps } from "@/types/professor";
+import { LessonPostProps } from "@/types/lesson";
 
 export default function AddLesson() {
 	const router = useRouter();
 	const [groups, setGroups] = useState<GroupProps[]>([]);
 	const [subjects, setSubjects] = useState<SubjectProps[]>([]);
 	const [professors, setProfessors] = useState<ProfessorProps[]>([]);
-	const [group, setGroup] = useState("");
-	const [subject, setSubject] = useState("");
-	const [professor, setProfessor] = useState("");
-	const [day, setDay] = useState("");
-	const [time, setTime] = useState("");
+	const [lesson, setLesson] = useState<LessonPostProps>({
+		group: 0,
+		subject: 0,
+		professor: 0,
+		day: 0,
+		time: 0,
+	});
 	const [posting, setPosting] = useState(false);
 
 	useEffect(() => {
@@ -32,17 +35,19 @@ export default function AddLesson() {
 		axios.get(PROFESSOR_BASE_URL).then((res) => setProfessors(res.data));
 	}, []);
 
+	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const { name, value } = e.target;
+		setLesson((prev) => ({
+			...prev,
+			[name]: Number(value),
+		}));
+	};
+
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		setPosting(true);
 		try {
-			await axios.post(LESSON_BASE_URL, {
-				group: Number(group),
-				subject: Number(subject),
-				professor: Number(professor),
-				day: Number(day),
-				time: Number(time),
-			});
+			await axios.post(LESSON_BASE_URL, lesson);
 			alert("Aula cadastrada com sucesso!");
 			router.push("/lessons");
 		} catch (error: any) {
@@ -67,8 +72,8 @@ export default function AddLesson() {
 						<select
 							id="group"
 							name="group"
-							value={group}
-							onChange={(e) => setGroup(e.target.value)}
+							value={lesson.group}
+							onChange={handleChange}
 							className="form select"
 							required
 						>
@@ -90,8 +95,8 @@ export default function AddLesson() {
 						<select
 							id="subject"
 							name="subject"
-							value={subject}
-							onChange={(e) => setSubject(e.target.value)}
+							value={lesson.subject}
+							onChange={handleChange}
 							className="form select"
 							required
 						>
@@ -113,8 +118,8 @@ export default function AddLesson() {
 						<select
 							id="professor"
 							name="professor"
-							value={professor}
-							onChange={(e) => setProfessor(e.target.value)}
+							value={lesson.professor}
+							onChange={handleChange}
 							className="form select"
 							required
 						>
@@ -133,8 +138,8 @@ export default function AddLesson() {
 						<select
 							id="day"
 							name="day"
-							value={day}
-							onChange={(e) => setDay(e.target.value)}
+							value={lesson.day}
+							onChange={handleChange}
 							className="form select"
 							required
 						>
@@ -155,8 +160,8 @@ export default function AddLesson() {
 						<select
 							id="time"
 							name="time"
-							value={time}
-							onChange={(e) => setTime(e.target.value)}
+							value={lesson.time}
+							onChange={handleChange}
 							className="form select"
 							required
 						>

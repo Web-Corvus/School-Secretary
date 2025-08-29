@@ -1,6 +1,6 @@
 import { SubjectProps } from "./subject";
 
-export interface AgendaItem {
+export interface AgendaItemProps {
 	id: number;
 	title: string;
 	subject?: number;
@@ -11,3 +11,8 @@ export interface AgendaItem {
 	created_at: string;
 	updated_at: string;
 }
+
+export type AgendaItemPostProps = Omit<
+	AgendaItemProps,
+	"id" | "created_at" | "updated_at" | "subject_details"
+>;

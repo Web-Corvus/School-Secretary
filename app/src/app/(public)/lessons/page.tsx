@@ -6,10 +6,10 @@ import { useEffect, useState } from "react";
 
 import SelectObject from "@/components/SelectObject";
 import { GROUP_BASE_URL } from "@/config";
-import { DailyLessonsView, GroupProps } from "@/types/group";
+import { DailyLessonsViewProps, GroupProps } from "@/types/group";
 
 export default function LessonsPage() {
-	const [data, setData] = useState<DailyLessonsView[]>([]);
+	const [data, setData] = useState<DailyLessonsViewProps[]>([]);
 	const [update, setUpdate] = useState(false);
 	const [groups, setGroups] = useState<GroupProps[]>();
 	const [selectedGroup, setSelectedGroup] = useState<number>();
@@ -17,7 +17,7 @@ export default function LessonsPage() {
 	useEffect(() => {
 		if (!selectedGroup) return;
 		axios
-			.get<DailyLessonsView[]>(
+			.get<DailyLessonsViewProps[]>(
 				`${GROUP_BASE_URL}${selectedGroup}/get-lessons/`
 			)
 			.then((response) => {
