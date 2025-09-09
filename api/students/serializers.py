@@ -1,10 +1,16 @@
 from rest_framework import serializers
+from django.contrib.auth import get_user_model
+from django.db import transaction
 from .models import Student, Grade, Guardian, Contract, Presence
+from users.serializers import UserSerializer
+
+User = get_user_model()
 
 
 class StudentSerializer(serializers.ModelSerializer):
     from school.serializers import GroupSerializer
 
+    # user não é exposto para criação manual
     group_details = GroupSerializer(source="group", read_only=True)
 
     class Meta:
@@ -26,6 +32,7 @@ class GradeSerializer(serializers.ModelSerializer):
 
 
 class GuardianSerializer(serializers.ModelSerializer):
+    # user não é exposto para criação manual
     student_details = StudentSerializer(source="student", read_only=True)
 
     class Meta:

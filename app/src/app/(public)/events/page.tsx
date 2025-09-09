@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -15,18 +15,18 @@ export default function EventsPage() {
 	const [data, setData] = useState<EventProps[]>([]);
 
 	useEffect(() => {
-		axios
-			.get<EventProps[]>(`${EVENT_BASE_URL}`)
-			.then((response) => setData(response.data))
-			.catch((error) => {
-				alert(`Erro ao carregar eventos: ${error}`);
-			});
+	       api
+		       .get<EventProps[]>(`${EVENT_BASE_URL}`)
+		       .then((response) => setData(response.data))
+		       .catch((error) => {
+			       alert(`Erro ao carregar eventos: ${error}`);
+		       });
 
 		setUpdate(false);
 	}, [update]);
 
 	const handleDelete = (value: number) => {
-		axios.delete(`${EVENT_BASE_URL}${value}/`);
+		api.delete(`${EVENT_BASE_URL}${value}/`);
 		setUpdate(true);
 	};
 

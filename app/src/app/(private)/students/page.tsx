@@ -1,7 +1,9 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 import Link from "next/link";
+import { downloadFile } from "@/services/download";
 import React, { useState, useEffect } from "react";
 
 import { StudentProps } from "@/types/student";
@@ -9,15 +11,16 @@ import { STUDENT_BASE_URL } from "@/config";
 import SearchField from "@/components/SearchField";
 
 export default function StudentsPage() {
+	useAuthRedirect();
 	const [search, setSearch] = useState("");
 	const [data, setData] = useState<StudentProps[]>([]);
 	const [update, setUpdate] = useState(false);
 
 	useEffect(() => {
-		axios
-			.get<StudentProps[]>(`${STUDENT_BASE_URL}?search=${search}`)
-			.then((response) => setData(response.data))
-			.finally(() => setUpdate(false));
+	       api
+		       .get<StudentProps[]>(`${STUDENT_BASE_URL}?search=${search}`)
+		       .then((response) => setData(response.data))
+		       .finally(() => setUpdate(false));
 	}, [update]);
 
 	const handleSearch = (value: string) => {
@@ -25,9 +28,24 @@ export default function StudentsPage() {
 		setUpdate(true);
 	};
 
+
 	const handleDelete = (value: number) => {
-		axios.delete(`${STUDENT_BASE_URL}${value}/`);
+		api.delete(`${STUDENT_BASE_URL}${value}/`);
 		setUpdate(true);
+	};
+
+	const handleDownloadGrades = (studentId: number, fullName: string) => {
+		downloadFile(
+			`${STUDENT_BASE_URL}${studentId}/download-grades`,
+			`notas_${fullName.replace(/\s+/g, "_")}.pdf`
+		);
+	};
+
+	const handleDownloadPresence = (studentId: number, fullName: string) => {
+		downloadFile(
+			`${STUDENT_BASE_URL}${studentId}/download-presence`,
+			`presenca_${fullName.replace(/\s+/g, "_")}.pdf`
+		);
 	};
 
 	return (
@@ -83,20 +101,20 @@ export default function StudentsPage() {
 									</td>
 
 									<td>
-										<Link
-											href={`${STUDENT_BASE_URL}${student.id}/download-grades`}
+										<button
 											className="link-blue"
+											onClick={() => handleDownloadGrades(student.id, student.full_name)}
 										>
 											Notas
-										</Link>
+										</button>
 									</td>
 									<td>
-										<Link
-											href={`${STUDENT_BASE_URL}${student.id}/download-presence`}
+										<button
 											className="link-blue"
+											onClick={() => handleDownloadPresence(student.id, student.full_name)}
 										>
 											Presença
-										</Link>
+										</button>
 									</td>
 									<td>
 										<button

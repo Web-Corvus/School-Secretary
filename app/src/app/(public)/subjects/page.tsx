@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -16,12 +16,12 @@ export default function SubjectsPage() {
 	const [search, setSearch] = useState("");
 
 	useEffect(() => {
-		axios
-			.get<SubjectProps[]>(`${SUBJECT_BASE_URL}?search=${search}`)
-			.then((response) => setData(response.data))
-			.catch((error) => {
-				alert(`Erro ao carregar matérias: ${error}`);
-			});
+	       api
+		       .get<SubjectProps[]>(`${SUBJECT_BASE_URL}?search=${search}`)
+		       .then((response) => setData(response.data))
+		       .catch((error) => {
+			       alert(`Erro ao carregar matérias: ${error}`);
+		       });
 
 		setUpdate(false);
 	}, [update]);
@@ -32,7 +32,7 @@ export default function SubjectsPage() {
 	};
 
 	const handleDelete = (value: number) => {
-		axios.delete(`${SUBJECT_BASE_URL}${value}/`);
+		api.delete(`${SUBJECT_BASE_URL}${value}/`);
 		setUpdate(true);
 	};
 

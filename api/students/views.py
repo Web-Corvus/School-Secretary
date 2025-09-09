@@ -1,3 +1,4 @@
+
 from rest_framework import viewsets, filters
 from rest_framework.decorators import action
 from users.permissions import IsStaff, IsProfessor
@@ -20,10 +21,10 @@ class StudentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaff]
     filter_backends = [filters.SearchFilter]
     search_fields = [
-        "full_name",
+        "user__name",
+        "user__email",
         "registration_number",
         "phone_number",
-        "email",
         "cpf",
         "birthday",
         "address",
@@ -34,9 +35,30 @@ class StudentViewSet(viewsets.ModelViewSet):
         "created_at",
     ]
 
-    @action(detail=True, methods=["get"], url_path="download-grades")
+    from rest_framework.response import Response
+    from rest_framework.permissions import IsAuthenticated
+    from students.models import Guardian
+
+    def _can_download(self, request, student):
+        # Staff, superuser, o próprio aluno ou o guardião podem baixar
+        if request.user.is_staff or request.user.is_superuser:
+            return True
+        if hasattr(student, 'user') and student.user == request.user:
+            return True
+        # Guardião: usuário é guardião e está vinculado ao estudante
+        try:
+            guardian = Guardian.objects.get(user=request.user)
+            if guardian.student_id == student.id:
+                return True
+        except Guardian.DoesNotExist:
+            pass
+        return False
+
+    @action(detail=True, methods=["get"], url_path="download-grades", permission_classes=[IsAuthenticated])
     def download_grades_pdf(self, request, pk=None):
         student = self.get_object()
+        if not self._can_download(request, student):
+            return Response({"detail": "Proibido."}, status=403)
         subjects = get_subject_names()
         data = {}
         for subject in subjects:
@@ -53,9 +75,11 @@ class StudentViewSet(viewsets.ModelViewSet):
             f"Grades_{student.full_name}.pdf",
         )
 
-    @action(detail=True, methods=["get"], url_path="download-presence")
+    @action(detail=True, methods=["get"], url_path="download-presence", permission_classes=[IsAuthenticated])
     def download_presence_pdf(self, request, pk=None):
         student = self.get_object()
+        if not self._can_download(request, student):
+            return Response({"detail": "Proibido."}, status=403)
         presence_records = Presence.objects.filter(student=student)
         return pdfgen(
             "presence.html",
@@ -75,7 +99,7 @@ class GradeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsProfessor]
     filter_backends = [filters.SearchFilter]
     search_fields = [
-        "student__full_name",
+        "student__user__name",
         "student__registration_number",
         "subject__full_name",
         "subject__short_name",
@@ -87,17 +111,17 @@ class GradeViewSet(viewsets.ModelViewSet):
 
 
 class GuardianViewSet(viewsets.ModelViewSet):
-    queryset = Guardian.objects.all().order_by("full_name")
+    #queryset = Guardian.objects.all().order_by("full_name")
     serializer_class = GuardianSerializer
     permission_classes = [IsStaff]
     filter_backends = [filters.SearchFilter]
     search_fields = [
-        "full_name",
-        "student__full_name",
+        "user__name",
+        "user__email",
+        "student__user__name",
         "student__registration_number",
         "phone_number",
         "cpf",
-        "email",
         "birthday",
         "address",
         "created_at",
@@ -110,9 +134,9 @@ class ContractViewSet(viewsets.ModelViewSet):
     permission_classes = [IsStaff]
     filter_backends = [filters.SearchFilter]
     search_fields = [
-        "guardian__full_name",
+        "guardian__user__name",
         "guardian__cpf",
-        "student__full_name",
+        "student__user__name",
         "student__registration_number",
         "created_at",
     ]
@@ -135,7 +159,7 @@ class PresenceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsProfessor]
     filter_backends = [filters.SearchFilter]
     search_fields = [
-        "student__full_name",
+        "student__user__name",
         "student__registration_number",
         "date",
         "presence",

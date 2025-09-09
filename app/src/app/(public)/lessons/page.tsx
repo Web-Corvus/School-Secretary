@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -16,29 +16,29 @@ export default function LessonsPage() {
 
 	useEffect(() => {
 		if (!selectedGroup) return;
-		axios
-			.get<DailyLessonsViewProps[]>(
-				`${GROUP_BASE_URL}${selectedGroup}/get-lessons/`
-			)
-			.then((response) => {
-				setData(response.data);
-			})
-			.catch((error) => {
-				alert(`Erro ao carregar aulas: ${error}`);
-			});
+	       api
+		       .get<DailyLessonsViewProps[]>(
+			       `${GROUP_BASE_URL}${selectedGroup}/get-lessons/`
+		       )
+		       .then((response) => {
+			       setData(response.data);
+		       })
+		       .catch((error) => {
+			       alert(`Erro ao carregar aulas: ${error}`);
+		       });
 
 		setUpdate(false);
 	}, [update]);
 
 	useEffect(() => {
-		axios
-			.get(GROUP_BASE_URL)
-			.then((response) => {
-				setGroups(response.data);
-			})
-			.catch((error) => {
-				alert(`Erro ao carregar grupos: ${error}`);
-			});
+	       api
+		       .get(GROUP_BASE_URL)
+		       .then((response) => {
+			       setGroups(response.data);
+		       })
+		       .catch((error) => {
+			       alert(`Erro ao carregar grupos: ${error}`);
+		       });
 	}, []);
 
 	const handleSelectedGroup = (value: number | undefined) => {

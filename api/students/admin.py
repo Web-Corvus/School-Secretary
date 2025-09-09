@@ -25,6 +25,7 @@ class StudentsAdmin(admin.ModelAdmin):
         "download_presence_pdf",
         "download_grades_pdf",
     )
+    exclude = ("user",)
     list_display_links = (
         "full_name",
         "email",
@@ -92,6 +93,7 @@ class GuardiansAdmin(admin.ModelAdmin):
         "birthday",
         "address",
     )
+    exclude = ("user",)
     list_display_links = (
         "full_name",
         "email",

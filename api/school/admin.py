@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib import admin
 from school.models import (
     Subject,
     Itinerary,
@@ -87,8 +88,18 @@ class ProfessorsAdmin(admin.ModelAdmin):
         "email",
         "address",
     )
-    search_fields = ("full_name",)
-    list_filter = ("full_name",)
+    search_fields = ("user__name", "user__email", "cpf")
+    list_filter = ("subject",)
+
+    @admin.display(description="Full Name", ordering="user__name")
+    def get_full_name(self, obj):
+        if obj.user:
+            return obj.user.name
+
+    @admin.display(description="Email", ordering="user__email")
+    def get_email(self, obj):
+        if obj.user:
+            return obj.user.email
 
 
 class SchoolRecordsAdmin(admin.ModelAdmin):

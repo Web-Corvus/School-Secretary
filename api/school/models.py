@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 from utils.validators import cep_validator, cpf_validator, phone_validator
 from utils.day_util import get_day_name
 
@@ -96,6 +97,14 @@ class Group(models.Model):
 
 
 class Professor(models.Model):
+    user = models.OneToOneField(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="professor_profile",
+        null=True,
+        blank=True,
+        editable=False,
+    )
     full_name = models.CharField(
         max_length=200,
         verbose_name="Professor's full name",
