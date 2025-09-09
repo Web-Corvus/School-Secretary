@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -16,12 +16,13 @@ export default function ItinerariesPage() {
 	const [data, setData] = useState<ItineraryProps[]>([]);
 
 	useEffect(() => {
-		axios
-			.get<ItineraryProps[]>(`${ITINERARY_BASE_URL}?search=${search}`)
-			.then((response) => setData(response.data))
-			.catch((error) => {
-				alert(`Erro ao carregar itinerários: ${error}`);
-			});
+
+	       api
+		       .get<ItineraryProps[]>(`${ITINERARY_BASE_URL}?search=${search}`)
+		       .then((response) => setData(response.data))
+		       .catch((error) => {
+			       alert(`Erro ao carregar itinerários: ${error}`);
+		       });
 
 		setUpdate(false);
 	}, [update]);
@@ -32,7 +33,7 @@ export default function ItinerariesPage() {
 	};
 
 	const handleDelete = (value: number) => {
-		axios.delete(`${ITINERARY_BASE_URL}${value}/`);
+		api.delete(`${ITINERARY_BASE_URL}${value}/`);
 		setUpdate(true);
 	};
 

@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/services/api";
 
 import SearchField from "@/components/SearchField";
 
@@ -10,15 +11,16 @@ import { ProfessorProps } from "@/types/professor";
 import { PROFESSOR_BASE_URL } from "@/config";
 
 export default function ProfessorsPage() {
+	useAuthRedirect();
 	const [data, setData] = useState<ProfessorProps[]>([]);
 	const [search, setSearch] = useState("");
 	const [update, setUpdate] = useState(false);
 
 	useEffect(() => {
-		axios
-			.get(`${PROFESSOR_BASE_URL}?search=${search}`)
-			.then((response) => setData(response.data))
-			.finally(() => setUpdate(false));
+	       api
+		       .get(`${PROFESSOR_BASE_URL}?search=${search}`)
+		       .then((response) => setData(response.data))
+		       .finally(() => setUpdate(false));
 	}, [update]);
 
 	const handleSearch = (value: string) => {
@@ -27,7 +29,7 @@ export default function ProfessorsPage() {
 	};
 
 	const handleDelete = (value: number) => {
-		axios.delete(`${PROFESSOR_BASE_URL}${value}/`);
+		api.delete(`${PROFESSOR_BASE_URL}${value}/`);
 		setUpdate(true);
 	};
 

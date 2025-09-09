@@ -18,8 +18,10 @@ export async function login(
 
 		const { access, refresh } = response.data;
 
-		document.cookie = `access=${access}; path=/; SameSite=Lax`;
-		document.cookie = `refresh=${refresh}; path=/; SameSite=Lax`;
+		if (typeof window !== "undefined") {
+			localStorage.setItem("access", access);
+			localStorage.setItem("refresh", refresh);
+		}
 
 		return { access, refresh };
 	} catch (error) {
@@ -28,6 +30,8 @@ export async function login(
 }
 
 export function logout() {
-	document.cookie = "access=; path=/; max-age=0;";
-	document.cookie = "refresh=; path=/; max-age=0;";
+	if (typeof window !== "undefined") {
+		localStorage.removeItem("access");
+		localStorage.removeItem("refresh");
+	}
 }

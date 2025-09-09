@@ -1,6 +1,7 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +11,7 @@ import { SubjectProps } from "@/types/subject";
 import { SUBJECT_BASE_URL, PROFESSOR_BASE_URL } from "@/config";
 
 export default function AddProfessor() {
+	useAuthRedirect();
 	const router = useRouter();
 	const [subjects, setSubjects] = useState<SubjectProps[]>([]);
 	const [professor, setProfessor] = useState<ProfessorPostProps>({
@@ -23,9 +25,9 @@ export default function AddProfessor() {
 	});
 
 	useEffect(() => {
-		axios
-			.get(SUBJECT_BASE_URL)
-			.then((response) => setSubjects(response.data));
+	       api
+		       .get(SUBJECT_BASE_URL)
+		       .then((response) => setSubjects(response.data));
 	}, []);
 
 	const handleChange = (
@@ -41,7 +43,7 @@ export default function AddProfessor() {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
-			await axios.post(PROFESSOR_BASE_URL, professor);
+			   await api.post(PROFESSOR_BASE_URL, professor);
 			alert("Professor cadastrado com sucesso!");
 			setProfessor({
 				full_name: "",

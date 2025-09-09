@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -30,9 +30,9 @@ export default function AddLesson() {
 	const [posting, setPosting] = useState(false);
 
 	useEffect(() => {
-		axios.get(GROUP_BASE_URL).then((res) => setGroups(res.data));
-		axios.get(SUBJECT_BASE_URL).then((res) => setSubjects(res.data));
-		axios.get(PROFESSOR_BASE_URL).then((res) => setProfessors(res.data));
+		api.get(GROUP_BASE_URL).then((res) => setGroups(res.data));
+		api.get(SUBJECT_BASE_URL).then((res) => setSubjects(res.data));
+		api.get(PROFESSOR_BASE_URL).then((res) => setProfessors(res.data));
 	}, []);
 
 	const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -47,7 +47,7 @@ export default function AddLesson() {
 		e.preventDefault();
 		setPosting(true);
 		try {
-			await axios.post(LESSON_BASE_URL, lesson);
+			   await api.post(LESSON_BASE_URL, lesson);
 			alert("Aula cadastrada com sucesso!");
 			router.push("/lessons");
 		} catch (error: any) {

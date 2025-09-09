@@ -1,6 +1,7 @@
 "use client";
 
-import axios, { AxiosError } from "axios";
+import api from "@/services/api";
+import useAuthRedirect from "@/hooks/useAuthRedirect";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -10,6 +11,7 @@ import { GroupProps } from "@/types/group";
 import { STUDENT_BASE_URL, GROUP_BASE_URL } from "@/config";
 
 export default function AddStudents() {
+	useAuthRedirect();
 	const router = useRouter();
 	const [groups, setGroups] = useState<GroupProps[]>([]);
 	const [student, setStudent] = useState<StudentPostProps>({
@@ -24,9 +26,9 @@ export default function AddStudents() {
 	});
 
 	useEffect(() => {
-		axios.get(GROUP_BASE_URL).then((response) => {
-			setGroups(response.data);
-		});
+	       api.get(GROUP_BASE_URL).then((response) => {
+		       setGroups(response.data);
+	       });
 	}, []);
 
 	const handleChange = (
@@ -42,7 +44,7 @@ export default function AddStudents() {
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		try {
-			await axios.post(STUDENT_BASE_URL, student);
+			   await api.post(STUDENT_BASE_URL, student);
 			alert("Aluno cadastrado com sucesso!");
 			setStudent({
 				full_name: "",

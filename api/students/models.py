@@ -1,6 +1,9 @@
 from django.db import models
 from datetime import datetime
 
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+
 from utils.validators import phone_validator, cep_validator, cpf_validator
 from utils.subject_utils import get_subject_names
 
@@ -13,6 +16,21 @@ BIMESTER_CHOICES = [
 
 
 class Student(models.Model):
+    # user = models.OneToOneField(#preciso que seja nome e não user nome
+    #     get_user_model(),
+    #     on_delete=models.CASCADE,
+    #     related_name="student_profile",
+    #     null=True,
+    #     blank=True,
+    # )
+    from django.contrib.auth import get_user_model
+    user = models.OneToOneField(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="student_profile",
+        null=True,
+        blank=True,
+    )
     full_name = models.CharField(
         max_length=200, verbose_name="Student's full name", null=True
     )
@@ -44,7 +62,7 @@ class Student(models.Model):
     )
 
     created_at = models.DateTimeField(
-        default=datetime.now(),
+        default=timezone.now,
         editable=False,
     )
 
@@ -53,6 +71,14 @@ class Student(models.Model):
 
 
 class Guardian(models.Model):
+    from django.contrib.auth import get_user_model
+    user = models.OneToOneField(
+        get_user_model(),
+        on_delete=models.CASCADE,
+        related_name="guardian_profile",
+        null=True,
+        blank=True,
+    )
     full_name = models.CharField(
         max_length=200, verbose_name="Guardian's full name", null=True
     )
@@ -80,7 +106,7 @@ class Guardian(models.Model):
     address = models.CharField(max_length=100, validators=[cep_validator])
 
     created_at = models.DateTimeField(
-        default=datetime.now(),
+        default=timezone.now,
         editable=False,
     )
 
@@ -108,7 +134,7 @@ class Contract(models.Model):
     )
 
     created_at = models.DateTimeField(
-        default=datetime.now(),
+        default=timezone.now,
         editable=False,
     )
 
@@ -150,12 +176,14 @@ class Grade(models.Model):
     value = models.FloatField(blank=False, null=True)
 
     created_at = models.DateTimeField(
-        default=datetime.now(),
+        default=timezone.now,
         editable=False,
     )
 
     def __str__(self):
-        return f"{self.student.full_name}'s Bulletin"
+        if self.student:
+            return f"{self.student.full_name}'s Bulletin"
+        return "Grade sem estudante"
 
     class Meta:
         verbose_name_plural = "Grades"
@@ -173,7 +201,7 @@ class Presence(models.Model):
     date = models.DateField()
     presence = models.BooleanField()
     created_at = models.DateTimeField(
-        default=datetime.now(),
+        default=timezone.now,
         editable=False,
     )
 

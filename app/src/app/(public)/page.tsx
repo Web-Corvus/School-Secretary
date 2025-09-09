@@ -1,7 +1,8 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AgendaItemProps } from "@/types/agenda";
 import { EventProps } from "@/types/event";
 import { AGENDA_PENDENTS_URL, EVENT_PENDENTS_URL } from "@/config";
@@ -9,29 +10,43 @@ import { AGENDA_PENDENTS_URL, EVENT_PENDENTS_URL } from "@/config";
 export default function Home() {
 	const [agenda, setAgenda] = useState<AgendaItemProps[]>([]);
 	const [events, setEvents] = useState<EventProps[]>([]);
+	const router = useRouter();
 
 	useEffect(() => {
+		// Redireciona para login se não estiver autenticado
+		if (typeof window !== "undefined" && !localStorage.getItem("access")) {
+			router.replace("/login");
+			return;
+		}
 		async function getAgenda() {
 			try {
-				const agendaResponse = await axios.get(AGENDA_PENDENTS_URL);
+				const agendaResponse = await api.get(AGENDA_PENDENTS_URL);
 				if (!agendaResponse) {
 					throw new Error("Agenda unavaible.");
 				}
 				setAgenda(agendaResponse.data);
-			} catch (error) {
-				console.error("Error fetching agenda items on client:", error);
+			} catch (error: any) {
+				if (error?.response?.status === 401) {
+					setAgenda([]);
+				} else {
+					console.error("Error fetching agenda items on client:", error);
+				}
 			}
 		}
 
 		async function getEvents() {
 			try {
-				const eventResponse = await axios.get(EVENT_PENDENTS_URL);
+				const eventResponse = await api.get(EVENT_PENDENTS_URL);
 				if (!eventResponse) {
 					throw new Error("Events unavaible.");
 				}
 				setEvents(eventResponse.data);
-			} catch (error) {
-				console.error("Error fetching events on client:", error);
+			} catch (error: any) {
+				if (error?.response?.status === 401) {
+					setEvents([]);
+				} else {
+					console.error("Error fetching events on client:", error);
+				}
 			}
 		}
 
@@ -92,7 +107,9 @@ export default function Home() {
 						</ul>
 					) : (
 						<p className="text-[var(--smooth)]">
-							Nenhuma atualização recente na agenda.
+							{typeof window !== "undefined" && !localStorage.getItem("access")
+								? "Faça login para visualizar a agenda."
+								: "Nenhuma atualização recente na agenda."}
 						</p>
 					)}
 				</div>
@@ -138,7 +155,9 @@ export default function Home() {
 						</ul>
 					) : (
 						<p className="text-[var(--smooth)]">
-							Nenhum evento recente.
+							{typeof window !== "undefined" && !localStorage.getItem("access")
+								? "Faça login para visualizar os eventos."
+								: "Nenhum evento recente."}
 						</p>
 					)}
 				</div>

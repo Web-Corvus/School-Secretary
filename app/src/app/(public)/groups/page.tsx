@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import api from "@/services/api";
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
@@ -16,12 +16,13 @@ export default function GroupsPage() {
 	const [data, setData] = useState<GroupProps[]>([]);
 
 	useEffect(() => {
-		axios
-			.get<GroupProps[]>(`${GROUP_BASE_URL}?search=${search}`)
-			.then((response) => setData(response.data))
-			.catch((error) => {
-				alert(`Erro ao carregar alunos: ${error}`);
-			});
+
+	       api
+		       .get<GroupProps[]>(`${GROUP_BASE_URL}?search=${search}`)
+		       .then((response) => setData(response.data))
+		       .catch((error) => {
+			       alert(`Erro ao carregar alunos: ${error}`);
+		       });
 
 		setUpdate(false);
 	}, [update]);
@@ -32,7 +33,7 @@ export default function GroupsPage() {
 	};
 
 	const handleDelete = (value: number) => {
-		axios.delete(`${GROUP_BASE_URL}${value}/`);
+		api.delete(`${GROUP_BASE_URL}${value}/`);
 		setUpdate(true);
 	};
 
